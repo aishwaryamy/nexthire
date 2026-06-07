@@ -4,9 +4,21 @@ from typing import List
 from database import get_db
 from models import Job
 from schemas import JobCreate, JobUpdate, JobOut, StatusUpdate
-import json
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
+
+@router.get("/stats/summary")
+def get_stats(db: Session = Depends(get_db)):
+    jobs = db.query(Job).all()
+    total = len(jobs)
+    by_status = {}
+    for j in jobs:
+        by_status[j.status] = by_status.get(j.status, 0) + 1
+    call_rate = 0
+    if total > 0:
+        interviews = by_status.get("interview", 0) + by_status.get("phone_screen", 0) + by_status.get("offer", 0)
+        call_rate = round(interviews / total * 100, 1)
+    return {"total": total, "by_status": by_status, "call_rate": call_rate}
 
 @router.get("", response_model=List[JobOut])
 def get_jobs(db: Session = Depends(get_db)):
@@ -56,20 +68,3 @@ def delete_job(job_id: str, db: Session = Depends(get_db)):
     db.delete(job)
     db.commit()
     return {"ok": True}
-
-@router.get("/stats/summary")
-def get_stats(db: Session = Depends(get_db)):
-    jobs = db.query(Job).all()
-    total = len(jobs)
-    by_status = {}
-    for j in jobs:
-        by_status[j.status] = by_status.get(j.status, 0) + 1
-    call_rate = 0
-    if total > 0:
-        interviews = by_status.get("interview", 0) + by_status.get("phone_screen", 0) + by_status.get("offer", 0)
-        call_rate = round(interviews / total * 100, 1)
-    return {
-        "total": total,
-        "by_status": by_status,
-        "call_rate": call_rate
-    }
