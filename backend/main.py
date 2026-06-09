@@ -31,10 +31,14 @@ app.include_router(interview_router)
 def health():
     return {"status": "ok", "version": "3.0.0"}
 
-static_dir = os.environ.get("STATIC_DIR", "")
-if static_dir and os.path.exists(static_dir):
+# Serve React frontend in production (Render)
+static_dir = os.environ.get("STATIC_DIR", "static")
+if os.path.exists(static_dir):
     app.mount("/assets", StaticFiles(directory=f"{static_dir}/assets"), name="assets")
 
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
-        return FileResponse(os.path.join(static_dir, "index.html"))
+        index = os.path.join(static_dir, "index.html")
+        if os.path.exists(index):
+            return FileResponse(index)
+        return {"error": "Frontend not built. Run build.sh first."}
