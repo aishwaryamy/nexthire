@@ -12,7 +12,13 @@ export default function Discover() {
   const [loading, setLoading]       = useState({ patterns: false, jobs: false })
   const [tab, setTab]               = useState('patterns')
 
-  useEffect(() => { loadStats() }, [])
+  useEffect(() => {
+    loadStats()
+    axios.get('/api/discover/stats').then(r => {
+      setEmailConfig(r.data.email_configured)
+      setAlertEmail(r.data.alert_email || '')
+    }).catch(() => {})
+  }, [])
 
   const loadStats = async () => {
     try {
@@ -37,8 +43,11 @@ export default function Discover() {
     try {
       const { data } = await axios.post('/api/discover/jobs', {
         resume,
-        custom_query: query || undefined
+        custom_query: query || undefined,
+        send_email: sendEmail,
+        alert_email: alertEmail || undefined
       })
+      if (data.email_sent) toast.success('Email alert sent!')
       setJobs(data.jobs || [])
       toast.success(`Found ${data.jobs?.length ?? 0} matching roles`)
     } catch { toast.error('Failed to fetch jobs') }
@@ -262,6 +271,20 @@ export default function Discover() {
               <textarea value={resume} onChange={e => setResume(e.target.value)}
                 rows={4} placeholder="Paste your resume for more accurate match scoring..." />
             </div>
+
+            {emailConfig && (
+              <div className="email-toggle">
+                <label className="checkbox-label">
+                  <input type="checkbox" checked={sendEmail}
+                    onChange={e => setSendEmail(e.target.checked)} />
+                  Email me when high-scoring jobs are found
+                </label>
+                {sendEmail && (
+                  <input value={alertEmail} onChange={e => setAlertEmail(e.target.value)}
+                    placeholder="your@email.com" style={{marginTop:8, width:'100%'}} />
+                )}
+              </div>
+            )}
 
             {jobs.length === 0 && !loading.jobs && (
               <div className="discover-empty">

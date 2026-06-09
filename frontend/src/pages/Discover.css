@@ -130,3 +130,8 @@
 
 .jobs-tab {}
 .pattern-tab {}
+
+.email-toggle {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; margin-bottom: 12px;
+}

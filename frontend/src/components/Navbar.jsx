@@ -10,8 +10,9 @@ export default function Navbar({ stats }) {
         <span className="navbar-name">NextHire</span>
       </div>
       <div className="navbar-links">
-        <Link to="/"         className={loc.pathname === '/'         ? 'active' : ''}>Board</Link>
-        <Link to="/discover" className={loc.pathname === '/discover' ? 'active' : ''}>Discover</Link>
+        <Link to="/"          className={loc.pathname === '/'          ? 'active' : ''}>Board</Link>
+        <Link to="/discover"  className={loc.pathname === '/discover'  ? 'active' : ''}>Discover</Link>
+        <Link to="/analytics" className={loc.pathname === '/analytics' ? 'active' : ''}>Analytics</Link>
       </div>
       <div className="navbar-stats">
         <span className="stat-chip">{stats?.total ?? 0} jobs</span>

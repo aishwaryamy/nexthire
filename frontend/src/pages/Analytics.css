@@ -1,0 +1,61 @@
+.analytics-page { padding: 24px; overflow-y: auto; height: calc(100vh - 56px); }
+.analytics-header { margin-bottom: 24px; }
+.analytics-title  { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.analytics-sub    { font-size: 13px; color: var(--text2); }
+
+.analytics-loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: calc(100vh - 56px); gap: 16px;
+}
+.analytics-spinner {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--purple);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.analytics-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: calc(100vh - 56px);
+  text-align: center; color: var(--text2);
+}
+.analytics-empty-icon { font-size: 40px; margin-bottom: 16px; }
+.analytics-empty h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.analytics-empty p  { max-width: 360px; line-height: 1.7; }
+
+.metrics-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 20px;
+}
+.metric-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.metric-val   { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.metric-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.charts-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 20px;
+}
+.chart-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.chart-card.wide { grid-column: span 2; }
+.chart-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text3); margin-bottom: 16px;
+}
+
+.insights-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.insights-grid { display: flex; flex-direction: column; gap: 8px; }
+.insight {
+  padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5;
+}
+.insight.good { background: #052e1c; color: #6ee7b7; border: 1px solid #064e3b; }
+.insight.warn { background: #3b2500; color: #fcd34d; border: 1px solid #78350f; }
+.insight.info { background: #1e1b4b; color: #c4b5fd; border: 1px solid #3730a3; }

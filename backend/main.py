@@ -7,6 +7,7 @@ from routers.jobs import router as jobs_router
 from routers.ai_tools import router as ai_router
 from routers.discover import router as discover_router
 from routers.interview import router as interview_router
+from routers.analytics import router as analytics_router
 from config import settings
 import os
 
@@ -26,12 +27,12 @@ app.include_router(jobs_router)
 app.include_router(ai_router)
 app.include_router(discover_router)
 app.include_router(interview_router)
+app.include_router(analytics_router)
 
 @app.get("/api/health")
 def health():
     return {"status": "ok", "version": "3.0.0"}
 
-# Serve React frontend in production (Render)
 static_dir = os.environ.get("STATIC_DIR", "static")
 if os.path.exists(static_dir):
     app.mount("/assets", StaticFiles(directory=f"{static_dir}/assets"), name="assets")
@@ -41,4 +42,4 @@ if os.path.exists(static_dir):
         index = os.path.join(static_dir, "index.html")
         if os.path.exists(index):
             return FileResponse(index)
-        return {"error": "Frontend not built. Run build.sh first."}
+        return {"error": "Frontend not built"}

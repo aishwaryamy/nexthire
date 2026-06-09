@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     APP_PASSWORD: Optional[str] = None
     REDIS_URL: str = "redis://localhost:6379"
     CORS_ORIGINS: str = "*"
+    # Email notifications
+    SMTP_EMAIL: str = ""
+    SMTP_PASSWORD: str = ""
+    ALERT_EMAIL: str = ""
+    APP_URL: str = "http://localhost:5173"
 
     class Config:
         env_file = ".env"

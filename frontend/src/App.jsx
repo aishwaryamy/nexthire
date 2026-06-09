@@ -5,6 +5,7 @@ import Navbar from './components/Navbar'
 import Board from './pages/Board'
 import JobDetail from './pages/JobDetail'
 import Discover from './pages/Discover'
+import Analytics from './pages/Analytics'
 import { getStats } from './api/client'
 import './index.css'
 
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/"           element={<Board onStatsChange={refreshStats} />} />
         <Route path="/jobs/:id"   element={<JobDetail />} />
         <Route path="/discover"   element={<Discover />} />
+        <Route path="/analytics"  element={<Analytics />} />
       </Routes>
       <Toaster
         position="bottom-right"
