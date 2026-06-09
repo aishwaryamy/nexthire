@@ -1,6 +1,6 @@
 # NextHire — AI Job Search Copilot
 
-> Job searching is one of the most important things you'll do in your career — and it deserves better tooling. I built NextHire to give every job seeker a personal AI copilot: one place to track your applications, generate tailored cover letters, find the right people to reach out to, understand what's actually working in your search, and walk into every interview prepared. Built for myself while navigating the job market, and for everyone else doing the same.
+> Job searching is one of the most important things you'll do in your career — and it deserves better tooling. I built NextHire to give every job seeker a personal AI copilot: one place to track your applications, generate tailored cover letters, find the right people to reach out to, understand what's actually working in your search, and walk into every interview prepared. NextHire is my attempt to fix all of that in one place.
 
 Live demo: https://nexthire-46nl.onrender.com
 
