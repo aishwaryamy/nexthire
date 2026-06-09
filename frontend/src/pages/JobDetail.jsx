@@ -4,6 +4,8 @@ import { getJob, updateJob, updateStatus, deleteJob,
          parseJD, genCoverLetter, tailorResume, draftEmail, findContacts } from '../api/client'
 import toast from 'react-hot-toast'
 import './JobDetail.css'
+import InterviewPrep from '../components/InterviewPrep'
+import '../components/InterviewPrep.css'
 
 const STATUSES = ['saved','applied','phone_screen','interview','offer','rejected']
 
@@ -151,7 +153,7 @@ export default function JobDetail() {
         {/* Right: tabs */}
         <div className="detail-content">
           <div className="detail-tabs">
-            {['overview','cover-letter','tailor','email','contacts'].map(t => (
+            {['overview','cover-letter','tailor','email','contacts','interview'].map(t => (
               <button key={t} className={`tab ${activeTab === t ? 'active' : ''}`}
                 onClick={() => setActiveTab(t)}>
                 {t === 'overview' && '📋 Overview'}
@@ -159,6 +161,7 @@ export default function JobDetail() {
                 {t === 'tailor' && '✏️ Tailored resume'}
                 {t === 'email' && '✉️ Outreach'}
                 {t === 'contacts' && `👥 Contacts ${contacts.length ? `(${contacts.length})` : ''}`}
+              {t === 'interview' && '🎯 Interview prep'}
               </button>
             ))}
           </div>
@@ -237,6 +240,11 @@ export default function JobDetail() {
               </div>
             )}
           </div>
+            {activeTab === 'interview' && (
+              <div>
+                <InterviewPrep jobId={id} resume={resume} />
+              </div>
+            )}
         </div>
       </div>
     </div>

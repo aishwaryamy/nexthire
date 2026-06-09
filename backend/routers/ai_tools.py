@@ -7,9 +7,29 @@ from schemas import (CoverLetterRequest, ResumeTailorRequest,
 from agents.jd_parser import parse_jd
 from agents.writing import generate_cover_letter, tailor_resume, draft_outreach_email
 from agents.contacts import find_contacts
+from urllib.parse import urlparse
 import json
 
 router = APIRouter(prefix="/api/ai", tags=["ai"])
+
+def extract_domain(job_url: str | None, company: str) -> str | None:
+    """Extract domain from job URL, or derive from company name."""
+    if job_url:
+        try:
+            parsed = urlparse(job_url)
+            hostname = parsed.hostname or ""
+            # Remove www. prefix
+            domain = hostname.replace("www.", "")
+            # Filter out job board domains
+            job_boards = ["linkedin.com", "indeed.com", "glassdoor.com",
+                          "greenhouse.io", "lever.co", "workday.com",
+                          "myworkdayjobs.com", "jobs.com", "ziprecruiter.com",
+                          "wellfound.com", "angel.co"]
+            if domain and not any(jb in domain for jb in job_boards):
+                return domain
+        except:
+            pass
+    return None  # Fall back to company name guessing in contacts.py
 
 @router.post("/parse-jd/{job_id}")
 async def parse_job_description(job_id: str, db: Session = Depends(get_db)):
@@ -101,15 +121,18 @@ async def find_contacts_for_job(job_id: str, db: Session = Depends(get_db)):
     if not job:
         raise HTTPException(404, "Job not found")
 
-    contacts = await find_contacts(company=job.company, role=job.role)
+    # Try to extract domain from job URL first
+    domain = extract_domain(job.job_url, job.company)
+
+    contacts = await find_contacts(company=job.company, domain=domain, role=job.role)
     job.contacts_json = json.dumps(contacts)
 
     # Auto-set top contact
     if contacts and contacts[0].get("email"):
         top = contacts[0]
-        job.contact_name = top.get("name")
+        job.contact_name  = top.get("name")
         job.contact_email = top.get("email")
         job.contact_title = top.get("title")
 
     db.commit()
-    return {"contacts": contacts}
+    return {"contacts": contacts, "domain_used": domain or f"{job.company.lower().replace(' ','')}.com"}
