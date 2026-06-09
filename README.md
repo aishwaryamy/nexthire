@@ -1,8 +1,8 @@
 # NextHire — AI Job Search Copilot
 
-> I built this because job hunting is exhausting. You're juggling dozens of applications, rewriting the same cover letter for every company, forgetting who you emailed, and losing track of where each application stands. NextHire is my attempt to fix all of that in one place.
+> Job searching is one of the most important things you'll do in your career — and it deserves better tooling. I built NextHire to give every job seeker a personal AI copilot: one place to track your applications, generate tailored cover letters, find the right people to reach out to, understand what's actually working in your search, and walk into every interview prepared. Built for myself while navigating the job market, and for everyone else doing the same.
 
-Live demo: *coming soon — deploying on Render*
+Live demo: https://nexthire-46nl.onrender.com
 
 ---
 
@@ -49,8 +49,6 @@ Live demo: *coming soon — deploying on Render*
 
 ## Running it locally
 
-Two terminal tabs, both with hot reload:
-
 ```bash
 # Backend
 cd backend
@@ -72,22 +70,6 @@ Health check: `http://localhost:8000/api/health`
 
 ---
 
-## Deploying on Render
-
-```bash
-# 1. Push to GitHub
-git push origin main
-
-# 2. Go to render.com → New → Web Service
-# 3. Connect your nexthire repo
-# 4. Set build command: ./build.sh
-# 5. Set start command: uvicorn main:app --host 0.0.0.0 --port $PORT
-# 6. Set root directory: backend
-# 7. Add environment variables (OPENAI_API_KEY, HUNTER_API_KEY etc.)
-```
-
----
-
 ## Environment variables
 
 | Variable | Required | What it's for |
@@ -96,7 +78,10 @@ git push origin main
 | `HUNTER_API_KEY` | No | Contact finder — 25 free searches/month at hunter.io |
 | `ANTHROPIC_API_KEY` | No | Alternative LLM (Claude) |
 | `DATABASE_URL` | No | Defaults to SQLite — use PostgreSQL URL for production |
-| `APP_PASSWORD` | No | Lock the app before going public |
+| `SMTP_EMAIL` | No | Gmail address for job alert emails |
+| `SMTP_PASSWORD` | No | Gmail App Password |
+| `ALERT_EMAIL` | No | Email to send job alerts to |
+| `APP_URL` | No | Your deployed URL |
 
 ---
 
@@ -108,7 +93,7 @@ git push origin main
 
 **AI** — OpenAI GPT-4o for all generation and analysis tasks.
 
-**Infrastructure** — Docker Compose for local dev, deployable on Render/Railway/Fly.io.
+**Infrastructure** — Docker Compose for local dev, deployed on Render.
 
 ---
 
@@ -123,6 +108,6 @@ git push origin main
 - [x] Pattern analyzer — learns from calls vs rejections
 - [x] Job discovery — scores new roles against your success profile
 - [x] Interview prep agent — STAR scoring and session summary
-- [ ] Live deployment on Render
-- [ ] Email notifications for new matching jobs
-- [ ] Analytics dashboard with application funnel charts
+- [x] Analytics dashboard — funnel charts and response rate trends
+- [x] Email job alerts — notifies when high-scoring roles are found
+- [x] Live deployment on Render
