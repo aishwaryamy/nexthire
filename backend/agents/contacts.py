@@ -5,43 +5,56 @@ import json
 HUNTER_BASE = "https://api.hunter.io/v2"
 
 async def find_contacts(company: str, domain: str | None = None, role: str | None = None) -> list:
-    """
-    Find contacts at a company using Hunter.io.
-    Returns ranked list of contacts best suited for cold outreach.
-    """
-    if not settings.HUNTER_API_KEY:
+    api_key = settings.HUNTER_API_KEY
+    print(f"[contacts] API key present: {bool(api_key)}, domain: {domain}, company: {company}")
+
+    if not api_key or api_key.strip() == "":
+        print("[contacts] No API key — returning mock")
         return _mock_contacts(company)
+
+    if not domain:
+        slug = company.lower().replace(" ", "").replace(",", "").replace(".", "")
+        domain = f"{slug}.com"
 
     params = {
-        "api_key": settings.HUNTER_API_KEY,
+        "api_key": api_key.strip(),
+        "domain": domain,
         "limit": 10,
         "offset": 0,
-        "type": "professional",
     }
 
-    if domain:
-        params["domain"] = domain
-    else:
-        # Derive domain from company name heuristic
-        slug = company.lower().replace(" ", "").replace(",", "").replace(".", "")
-        params["domain"] = f"{slug}.com"
+    print(f"[contacts] Calling Hunter for domain: {domain}")
 
-    async with httpx.AsyncClient(timeout=10) as http:
+    async with httpx.AsyncClient(timeout=15) as http:
         try:
             resp = await http.get(f"{HUNTER_BASE}/domain-search", params=params)
+            print(f"[contacts] Hunter status: {resp.status_code}")
             data = resp.json()
         except Exception as e:
+            print(f"[contacts] Request failed: {e}")
             return _mock_contacts(company)
 
-    if resp.status_code != 200 or "data" not in data:
+    if resp.status_code != 200:
+        print(f"[contacts] Bad status: {resp.status_code} — {data}")
         return _mock_contacts(company)
 
-    emails = data["data"].get("emails", [])
-    contacts = []
+    emails = data.get("data", {}).get("emails", [])
+    print(f"[contacts] Found {len(emails)} emails")
 
+    if not emails:
+        return [{
+            "name": f"No contacts found for {domain}",
+            "email": None,
+            "title": "Hunter has no data for this domain",
+            "linkedin": "",
+            "confidence": 0,
+            "relevance_score": 0,
+        }]
+
+    contacts = []
     for e in emails:
         contacts.append({
-            "name": f"{e.get('first_name','')} {e.get('last_name','')}".strip(),
+            "name": " ".join(filter(None, [e.get("first_name"), e.get("last_name")])) or e.get("value", "").split("@")[0].capitalize() or "Unknown",
             "email": e.get("value"),
             "title": e.get("position", ""),
             "linkedin": e.get("linkedin", ""),
@@ -49,17 +62,14 @@ async def find_contacts(company: str, domain: str | None = None, role: str | Non
             "relevance_score": _score_contact(e, role),
         })
 
-    # Sort by relevance
     contacts.sort(key=lambda x: x["relevance_score"], reverse=True)
     return contacts[:8]
 
 
 def _score_contact(contact: dict, target_role: str | None) -> int:
-    """Score a contact by how relevant they are to reach out to."""
     title = (contact.get("position") or "").lower()
     score = contact.get("confidence", 50)
 
-    # Hiring managers and engineering leads are top priority
     priority_titles = ["engineering manager", "hiring manager", "recruiter", "talent",
                        "head of engineering", "vp of engineering", "director of engineering",
                        "tech lead", "staff engineer", "senior engineer"]
@@ -68,28 +78,24 @@ def _score_contact(contact: dict, target_role: str | None) -> int:
             score += 30
             break
 
-    # If we know the target role, match seniority
     if target_role:
         role_lower = target_role.lower()
         if "ml" in role_lower or "machine learning" in role_lower:
-            if "ml" in title or "machine learning" in title or "data" in title or "ai" in title:
+            if any(k in title for k in ["ml", "machine learning", "data", "ai"]):
                 score += 20
         if "software" in role_lower or "backend" in role_lower:
-            if "software" in title or "backend" in title or "engineer" in title:
+            if any(k in title for k in ["software", "backend", "engineer"]):
                 score += 10
 
     return score
 
 
 def _mock_contacts(company: str) -> list:
-    """Return placeholder when no API key is configured."""
-    return [
-        {
-            "name": "Add Hunter.io API key to find real contacts",
-            "email": None,
-            "title": "Configure HUNTER_API_KEY in .env",
-            "linkedin": "",
-            "confidence": 0,
-            "relevance_score": 0,
-        }
-    ]
+    return [{
+        "name": "Add Hunter.io API key to find real contacts",
+        "email": None,
+        "title": "Configure HUNTER_API_KEY in .env",
+        "linkedin": "",
+        "confidence": 0,
+        "relevance_score": 0,
+    }]
