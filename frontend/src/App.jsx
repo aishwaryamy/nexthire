@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Board from './pages/Board'
 import JobDetail from './pages/JobDetail'
+import Discover from './pages/Discover'
 import { getStats } from './api/client'
 import './index.css'
 
@@ -20,17 +21,16 @@ export default function App() {
     <BrowserRouter>
       <Navbar stats={stats} />
       <Routes>
-        <Route path="/"          element={<Board onStatsChange={refreshStats} />} />
-        <Route path="/jobs/:id"  element={<JobDetail />} />
+        <Route path="/"           element={<Board onStatsChange={refreshStats} />} />
+        <Route path="/jobs/:id"   element={<JobDetail />} />
+        <Route path="/discover"   element={<Discover />} />
       </Routes>
       <Toaster
         position="bottom-right"
         toastOptions={{
           style: {
-            background: '#222230',
-            color: '#e8e8f0',
-            border: '1px solid #2e2e3e',
-            fontSize: '13px',
+            background: '#222230', color: '#e8e8f0',
+            border: '1px solid #2e2e3e', fontSize: '13px',
           }
         }}
       />

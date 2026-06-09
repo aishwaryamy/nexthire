@@ -7,11 +7,11 @@ export default function Navbar({ stats }) {
     <nav className="navbar">
       <div className="navbar-brand">
         <span className="navbar-logo">⚡</span>
-        <span className="navbar-name">JobHunt AI</span>
+        <span className="navbar-name">NextHire</span>
       </div>
       <div className="navbar-links">
-        <Link to="/" className={loc.pathname === '/' ? 'active' : ''}>Board</Link>
-        <Link to="/stats" className={loc.pathname === '/stats' ? 'active' : ''}>Analytics</Link>
+        <Link to="/"         className={loc.pathname === '/'         ? 'active' : ''}>Board</Link>
+        <Link to="/discover" className={loc.pathname === '/discover' ? 'active' : ''}>Discover</Link>
       </div>
       <div className="navbar-stats">
         <span className="stat-chip">{stats?.total ?? 0} jobs</span>
